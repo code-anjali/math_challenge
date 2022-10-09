@@ -15,25 +15,66 @@ Functionality for evaluation
 - To evaluate an MC response an evaluator compares the student answer with gold answer for every question.
 - Based on the grade of the student a passing score is determined and MC is considered successful if the student scores are at or above the passing score.
 
-List of potential classes
-Student
-Math_challenge
-mc_response
-    student
-    math_challenge
-    list_of_mc_responses (response)
-mc_gold
-    dict_of_mc_goldans (math_challenge -> ans)
-    def load_from_file(file_path)
-scorecard
-    student
-    dict_of_mc_gradings (math_challenge -> grading)
-    def pass_fail(student, math_challenge, mc_evaluation)
-mc_evaluator
-    mc_gold
-    mc_response
-    question_gradings
-    def evaluate(student_ans,gold_ans) -> yes_no
+#To-do
+read gold file and student answers from sheet url
+
+
+Director
+    dict_student_ans_history: Dict[StudentInfo,StudentAnsHistory]
+    dict_student_scorecard_history: Dict[StudentInfo,StudentScorecardHistory]
+    dict_gold_ans_history: Dict[MathChallenge,GoldAnsHistory]
+    def load_student_ans_history(file_path_or_sheet_url) -> Dict[StudentInfo,StudentAnsHistory]
+    def load_gold_ans_history(file_path_or_sheet_url) -> Dict[MathChallenge,GoldAnsHistory]
+    def generate_student_scorecard_history() -> Dict[StudentInfo,StudentScorecardHistory]
+
+StudentInfo
+    email: str
+    f_name : str
+    l_name : str
+    grade : str
+    teacher : str
+    school : str
+    school_district : str
+    wants_to_be_on_leaderboard: bool= True
+
+
+MathChallenge
+    (from old challenge)
+    mc_name: str
+    questions: List[str]
+
+StudentAnsHistory
+    student: StudentInfo
+    list_of_mc_responses: Dict[MathChallenge, StudentAns]
+
+StudentAns (prev called Challenge)
+    student: StudentInfo    
+    math_challenge: MathChallenge
+    list_of_student_answers: List[str]
+
+
+GoldAnsHistory
+    dict_of_mc_gold_answers: Dict[MathChallenge, GoldAns]
+    def load_from_file(file_path): borrow from Challenge
+
+GoldAns
+    math_challenge: MathChallenge
+    list_of_gold_answers: List[str]
+
+StudentScorecardHistory (from MathChallengeResult.summarize)
+    student: StudentInfo
+    dict_of_mc_scorecards: Dict[MathChallenge, Scorecard]
+
+StudentScorecard
+    student: StudentInfo
+    math_challenge: MathChallenge
+    mc_gold: GoldAns
+    mc_response: StudentAns
+    list_of_scores: List[bool]
+    def is_passed() -> bool
+
+QuesEvaluator
+    def evaluate(student_ans, gold_ans) -> bool
 
 
 
