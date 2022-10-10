@@ -39,7 +39,6 @@ StudentInfo
 
 
 MathChallenge
-    (from old challenge)
     mc_name: str
     questions: List[str]
 
@@ -76,6 +75,8 @@ StudentScorecard
 QuesEvaluator
     def evaluate(student_ans, gold_ans) -> bool
 
+
+Note: previous code: https://github.com/code-anjali/gsheetdb_tutorial/blob/08201d3f1d877ecccf6e147c0fc1e9e86286a756/math_challenge_related/challenge_result_checker.py
 
 
     
