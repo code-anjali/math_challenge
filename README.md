@@ -22,10 +22,10 @@ read gold file and student answers from sheet url
 Director
     dict_student_ans_history: Dict[StudentInfo,StudentAnsHistory]
     dict_student_scorecard_history: Dict[StudentInfo,StudentScorecardHistory]
-    dict_gold_ans_history: Dict[MathChallenge,GoldAnsHistory]
+    dict_gold_ans_history: GoldAnsHistory
     def load_student_ans_history(file_path_or_sheet_url) -> Dict[StudentInfo,StudentAnsHistory]
     def load_gold_ans_history(file_path_or_sheet_url) -> Dict[MathChallenge,GoldAnsHistory]
-    def generate_student_scorecard_history() -> Dict[StudentInfo,StudentScorecardHistory]
+    def generate_all_student_scorecard_history() -> Dict[StudentInfo,StudentScorecardHistory]
 
 StudentInfo
     email: str
@@ -54,7 +54,8 @@ StudentAns (prev called Challenge)
 
 GoldAnsHistory
     dict_of_mc_gold_answers: Dict[MathChallenge, GoldAns]
-    def load_from_file(file_path): borrow from Challenge
+    def load_from_file(file_path) -> GoldAnsHistory
+    def lookup_gold_ans_for(mc_name) -> GoldAns
 
 GoldAns
     math_challenge: MathChallenge
