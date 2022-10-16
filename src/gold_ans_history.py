@@ -8,9 +8,8 @@ from src.math_challenge import MathChallenge
 class GoldAnsHistory:
     dict_of_mc_gold_answers: Dict[MathChallenge,GoldAns]
 
-    def lookup_gold_ans_for(self, mc_name: str) -> GoldAns:
-        key =  MathChallenge(mc_name=mc_name)
-        return self.dict_of_mc_gold_answers[key]
+    def lookup_gold_ans_for(self, mc_challenge: MathChallenge) -> GoldAns:
+        return self.dict_of_mc_gold_answers.get(mc_challenge, GoldAns(mc_challenge, []))
 
 
     @staticmethod

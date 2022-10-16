@@ -12,8 +12,11 @@ class StudentAnsHistory:
     student : StudentInfo
     dict_of_mc_responses : Dict[MathChallenge, StudentAns]
 
-    def insert_mc_response(self, math_challenge: MathChallenge, student_ans: StudentAns):
+    def insert_mc_response(self, math_challenge: MathChallenge,
+                           student_ans: StudentAns,
+                           override_prev_answers: bool):
         if not self.dict_of_mc_responses:
             self.dict_of_mc_responses = {}
-        if math_challenge not in self.dict_of_mc_responses:
+
+        if override_prev_answers or math_challenge not in self.dict_of_mc_responses:
             self.dict_of_mc_responses[math_challenge] = student_ans

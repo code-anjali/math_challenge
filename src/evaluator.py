@@ -1,64 +1,56 @@
-from typing import List, Dict
+import re
+from typing import List, Dict, Any
 
 DEFAULT_EMPTY_ANS=-1000000  # if an answer cannot be parsed as an int (e.g., two ducklings or ducklings)
 
 
 class Evaluator:
-    evaluator_name : str
+    def __init__(self, evaluator_name):
+        self.evaluator_name : str = evaluator_name
 
-    def __init__(self, student: "StudentInfo",
-                 answers:List[str],
-                 challenge_name: str,
-                 is_student_resp: bool,
-                 list_of_text_retain_dict: List[Dict[str, int]] = {},
-                 split_ans_on = "__OR__"):
-        # One can add functionality here to reject a late submission (based on its timestamp, and a deadline dict)
-        # but an easier solution is to not disable previous MC id in the form.
-        self.is_student_resp = is_student_resp
-        self.orig_answers = answers
-        self.challenge_name = challenge_name
-        self.answers: List[int] = []
-        self.list_of_text_retain_dict = list_of_text_retain_dict
-        self.student = student
-        if list_of_text_retain_dict:
-            assert len(list_of_text_retain_dict) == len(answers), f"Challenge.init (question wise text to retain) not " \
-                                                                  f"passed correctly (length of this array must be equal " \
-                                                                  f"to number of answers i.e. {len(answers)}) and not " \
-                                                                  f"{len(list_of_text_retain_dict)}: {list_of_text_retain_dict}"
+    def evaluate(self, gold:str, stud:str, split_ans_on = "__OR__", pattern_to_retain="\{(.*?)\}") -> Dict[str, Any]:
+        gold_answers = gold.split(split_ans_on)
+        gold_txt_to_retain_dict = self.ans_to_ans_with_text_retain(a=gold, pattern_to_retain=pattern_to_retain)
+        gold_ints = [self.ans_with_text_retain_to_int(a=gold_answer, text_retain_dict= gold_txt_to_retain_dict) for gold_answer in gold_answers]
+        stud_int = self.ans_with_text_retain_to_int(a=stud, text_retain_dict= gold_txt_to_retain_dict)
+        return {"is_correct": stud_int in gold_ints,
+                "stud": stud_int,
+                "gold": gold_ints,
+                "gold_str": gold,
+                "stud_str": stud
+                }
 
-        for a_id, a in enumerate(answers):
-            text_retain_dict = {}
-            if list_of_text_retain_dict:
-                text_retain_dict = list_of_text_retain_dict[a_id]
-            if a and split_ans_on in a:
-                a_s = [self.ans_to_int(a=x, text_retain_dict=text_retain_dict) for x in a.split(split_ans_on)]
-                self.answers.append(a_s)  # answers can be a list [int] or an int
-            else:
-                self.answers.append(self.ans_to_int(a=a, text_retain_dict=text_retain_dict))
+    # def ans_to_ints(self, a: str, split_ans_on = "__OR__", pattern_to_retain="\{(.*?)\}") -> List[int]:
+    #     answers = a.split(split_ans_on)
+    #
+    #     ints = [self.ans_with_text_retain_to_int(a=x,
+    #                                              text_retain_dict=self.ans_to_ans_with_text_retain(
+    #                                                  a=a, pattern_to_retain=pattern_to_retain)
+    #                                              )
+    #             for x in answers]
+    #     return ints
 
+        # for a in answers:
+        #     a_s = [self.ans_to_int(a=x, text_retain_dict=text_retain_dict) for x in a.split(split_ans_on)]
+        #     text_retain_dict = self.ans_to_ans_with_text_retain(a=a, pattern_to_retain=pattern_to_retain)
+        #     int_ans = self.ans_with_text_retain_to_int(a=a, text_retain_dict=text_retain_dict)
+        #     ints.append(int_ans) # ints can be a list [int] or an int
+        #
+        # if a and split_ans_on in a:
+        #     a_s = [self.ans_to_int(a=x, text_retain_dict=text_retain_dict) for x in a.split(split_ans_on)]
+        #     answers.append(a_s)  # answers can be a list [int] or an int
+        # else:
+        #     answers.append(self.ans_to_int(a=a, text_retain_dict=text_retain_dict))
 
-    @classmethod
-    def load_gold_answers(cls, challenge_name_and_answers_dict, pattern_to_retain="\{(.*?)\}") -> (Dict[str, "Challenge"], Dict[str, List[Dict[str, int]]]):
-        alls = {}
-        challenge_wise_retaining: Dict[str, List[Dict[str, int]]] = {}
-        for challenge_nm, correct_answers in challenge_name_and_answers_dict.items():
-            # challenge_nm = d['Math Challenge name']
-            # correct_answers = [d[f"Question {x}"] for x in range(1, 19)]
-            list_of_text_retain_dict = []
-            for x in correct_answers:
-                list_of_text_retain_dict.append({x:x_id+1 for x_id, x in enumerate(re.findall(string=x, pattern=pattern_to_retain))})
-                # text_retain_matches = re.findall(pattern=text_retain_regex, string=a) #  "\{(.*?)\}"
-            #Todo
-            # alls[challenge_nm] = Challenge(student=None,  # gold does not have a student name.
-            #                                answers=correct_answers,
-            #                                challenge_name=challenge_nm,
-            #                                is_student_resp=False,
-            #                                list_of_text_retain_dict=list_of_text_retain_dict)
-            # challenge_wise_retaining[challenge_nm] = list_of_text_retain_dict
-        return alls, challenge_wise_retaining
+    def ans_to_ans_with_text_retain(self, a: str, pattern_to_retain) -> Dict[str, int]:
+        # if list_of_text_retain_dict:
+        #     assert len(list_of_text_retain_dict) == len(answers), f"Challenge.init (question wise text to retain) not " \
+        #                                                       f"passed correctly (length of this array must be equal " \
+        #                                                       f"to number of answers i.e. {len(answers)}) and not " \
+        #                                                       f"{len(list_of_text_retain_dict)}: {list_of_text_retain_dict}"
+        return {x: x_id+1 for x_id, x in enumerate(re.findall(string=a, pattern=pattern_to_retain))}
 
-    @classmethod
-    def ans_to_int(cls, a: str, text_retain_dict: Dict[str, int]={}) -> int:
+    def ans_with_text_retain_to_int(self, a: str, text_retain_dict: Dict[str, int]) -> int:
         ans = ""
         a = a or ""
         a = a.strip().lower()
@@ -91,3 +83,7 @@ class Evaluator:
             if not ans and len(a) > 0:
                 print(f"Check for preprocessing answer: input = {a}, output = {ans}")
         return int(ans) if ans else DEFAULT_EMPTY_ANS
+
+if __name__ == '__main__':
+    e = Evaluator(evaluator_name="testing")
+    e.evaluate(gold="12 ducks", stud="12 duckies")
