@@ -27,3 +27,6 @@ class StudentScorecard:
             eval_d = evaluator.evaluate(gold=gold, stud=stud)
             self.list_of_scores_with_diagnostics.append(eval_d)
             self.list_of_scores.append(eval_d["is_correct"])
+
+    def __repr__(self):
+        return "\n".join([str(x) for x in self.list_of_scores_with_diagnostics])

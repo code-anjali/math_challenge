@@ -16,3 +16,6 @@ class StudentInfo:
 
     def __eq__(self, other):
         return (self.email,self.f_name,self.l_name,self.grade, self.school)== (other.email,other.f_name,other.l_name,other.grade, other.school)
+
+    def __repr__(self):
+        return f"{self.f_name} {self.l_name[0]}. School: {self.school}  Grade: {self.grade} Teacher: {self.teacher} Email: {self.email} "

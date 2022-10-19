@@ -79,7 +79,12 @@ class Director:
         return dict_student_scorecard_hist
 
 
-
+    def search_scorecard_history_by_email(self,query_email_ids : List[str]) -> List[StudentScorecardHistory]:
+        searched_student_history : List[StudentScorecardHistory] = []
+        for student_info, student_scorecard_history in self.dict_student_scorecard_history.items():
+            if student_info.email in query_email_ids:
+                searched_student_history.append(student_scorecard_history)
+        return searched_student_history
 
 
 if __name__ == '__main__':
@@ -87,3 +92,9 @@ if __name__ == '__main__':
     student_ans_sheet_url="https://docs.google.com/spreadsheets/d/1dIALjbxmOYP5A8hyevMRLA6fbV4fhY9g8cb_qFMITvk/edit?usp=sharing&headers=1"
     director = Director(in_localhost= True,gold_ans_sheet_url=gold_ans_sheet_url,student_ans_sheet_url=student_ans_sheet_url, override_prev_answers=True)
     print("done.")
+    user_query = ""
+    while user_query!= "quit":
+        user_query = input("\n\nEnter parent email id (csv) to view scorecard history: ")
+        results = director.search_scorecard_history_by_email(query_email_ids=[x.lower().strip() for x in user_query.split(",")])
+        for r in results:
+            print(r)

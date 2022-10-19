@@ -26,6 +26,7 @@ Director
     def load_student_ans_history(file_path_or_sheet_url) -> Dict[StudentInfo,StudentAnsHistory]
     def load_gold_ans_history(file_path_or_sheet_url) -> Dict[MathChallenge,GoldAnsHistory]
     def generate_all_student_scorecard_history() -> Dict[StudentInfo,StudentScorecardHistory]
+    def search_scorecard_history_by_email(List of email ids) -> List[StudentRecords]
 
 StudentInfo
     email: str
