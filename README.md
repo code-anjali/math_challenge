@@ -8,3 +8,10 @@ math challenge has 5 major tasks
 5. Celebration
 
 This repository contains code to perform evaluation of the submissions and to generate a leaderboard as well as reviewing assignments.
+
+
+
+
+
+
+
