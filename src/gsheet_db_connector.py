@@ -4,7 +4,7 @@ import tempfile
 from typing import Dict, List
 
 import streamlit as st
-from shillelagh.backends.apsw.db import connect, Cursor
+from shillelagh.backends.apsw.db import connect
 
 
 

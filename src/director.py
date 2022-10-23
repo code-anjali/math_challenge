@@ -1,4 +1,10 @@
+import logging
+from dataclasses import dataclass
 from typing import Dict, List
+
+import pandas as pd
+from pandas import DataFrame
+from pandas.io.formats.style import Styler
 
 from src import student_info
 from src.evaluator import Evaluator
@@ -10,6 +16,14 @@ from src.student_ans_history import StudentAnsHistory
 from src.student_info import StudentInfo
 from src.student_scorcard import StudentScorecard
 from src.student_scorcard_history import StudentScorecardHistory
+
+
+@dataclass
+class DecoratedResult:
+    student_info: StudentInfo
+    pd_df: DataFrame
+    pd_styler: Styler
+    diagnostics: Dict[MathChallenge, StudentScorecard]
 
 
 class Director:
@@ -87,6 +101,122 @@ class Director:
         return searched_student_history
 
 
+    def decorated_student_ans(self, answers : List[str], marking : List[bool], mc_passed):
+        # U+2714 -> \U00002714
+        return ["\U0001F44D" if mc_passed else "\U0001F44E"] + \
+               [(ans or "") + "  " + ("\U00002714" if corr else "\N{cross mark}") for ans, corr in zip(answers, marking)]
+
+
+    def prepare_results(self, matching_records: List[StudentScorecardHistory]) -> List[DecoratedResult]:
+        """
+        format the results for display
+        :param matching_records: all mc scorecard history matched by searched email
+        :return: for every scorecard history return a decorated result
+
+        StudentScorecardHistory (student: StudentInfo, dict_of_mc_scorecards: Dict[MathChallenge, StudentScorecard])
+        e.g.
+        "MC1" -> StudentScoreCard
+                    student : StudentInfo
+                    math_challenge : MathChallenge
+                    mc_gold : GoldAns
+                    mc_response : StudentAns
+                    list_of_scores: List[bool]
+                    list_of_scores_with_diagnostics: List[Dict]
+                    passed_mc_as_per_grade : bool
+
+        "MC2" -> StudentScoreCard
+                   ....
+
+        DecoratedResult
+            student_info: StudentInfo
+            pd_df: DataFrame
+            pd_styler: Styler
+            diagnostics: Dict[MathChallenge, StudentScorecard]
+
+        Note: If        : this error is encountered --
+                          ValueError: could not convert string to float: '6,931'
+              Then      : Google sheets- Format -> number -> plain text
+        """
+
+        list_of_decorated_results : List[DecoratedResult] = []
+        for undecorated_result in matching_records:
+            pd_df, pd_styler = self.write_to_pd_frame(undecorated_result.dict_of_mc_scorecards)
+            d = DecoratedResult(student_info = undecorated_result.student,
+                                diagnostics= undecorated_result.dict_of_mc_scorecards,
+                                pd_df=pd_df,
+                                pd_styler=pd_styler)
+            list_of_decorated_results.append(d)
+        return list_of_decorated_results
+
+
+        # results : List[DecoratedResult] = []
+        # CHECKER_KEY="result_checker"
+        # assert CHECKER_KEY in st.session_state and st.session_state[CHECKER_KEY] is not None, f"{CHECKER_KEY} for checking results is missing."
+        # short_header = [x.replace('"','').replace("Question ", "Q") for x in header]
+        # logging.info(f"About to prepare nice format of student scorecard ... ")
+        #
+        # unsorted_rows = [row[:] for row in rows]
+        # logging.info(f"Retrieved: {len(unsorted_rows) if unsorted_rows else '0'} submissions.")
+        # dict_of_matrices: Dict[StudentInfo, List[List[str]]] = matrices_by_firstname(unsorted_rows)
+        # # logging.info(f"This about {len(dict_of_matrices)} students [{dict_of_matrices.keys()}] \n{len(dict_of_matrices.values())} ... ")
+        # for matching_record in matching_records:  # one parent can have multiple kids.
+        #     st.write(" ")
+        #     st.write("----------------------------------------")
+        #     st.write(f"**{student_info.f_name}** {student_info.l_name} - {student_info.grade} - Teacher {student_info.teacher}")
+        #     st.write("----------------------------------------")
+        #     final_rows = []
+        #
+        #     for mc, scorecard in matching_record.dict_of_mc_scorecards.items():
+        #         # final_rows.append([mc[5]] + result.gold_orig_ans)  # gold
+        #         # gold pretty that is not integer based.
+        #         final_rows.append([mc[5]] + scorecard.mc_gold.list_of_gold_answers)
+        #         final_rows.append(self.decorated_student_ans(
+        #             answers=scorecard.mc_response.list_of_student_answers,
+        #             marking=scorecard.list_of_scores,
+        #             mc_passed=scorecard.passed_mc_as_per_grade
+        #         ))
+        #         final_rows.append([""]*19)
+        #     data = pd.DataFrame([row for row in final_rows], columns=short_header)
+        #     prettier_data = data.style.set_table_styles([{
+        #         'selector': 'tr:hover',
+        #         'props': 'font-size: 1.01em;'
+        #     }])
+        #     prettier_data = prettier_data.applymap(lambda x: 'background-color : lightyellow' if len(x) < 1 else '')
+        #     # st.table(prettier_data)
+
+
+    def write_to_pd_frame(self, dict_of_mc_scorecards : Dict[MathChallenge, StudentScorecard])-> (DataFrame, Styler):
+        """
+
+        :param dict_of_mc_scorecards:
+        :return:
+        """
+        final_rows = []
+        num_ques = 18
+        header_row = ["MC"] + [f'"Q {x}"' for x in range(1, num_ques+1)]
+        empty_row  = [""]* (num_ques + 1)
+        final_rows.append(header_row)
+
+        for mc, scorecard in dict_of_mc_scorecards.items():
+            final_rows.append([mc.mc_name] + scorecard.mc_gold.list_of_gold_answers)
+            final_rows.append(self.decorated_student_ans(
+                answers=scorecard.mc_response.list_of_student_answers,
+                marking=scorecard.list_of_scores,
+                mc_passed=scorecard.passed_mc_as_per_grade
+            ))
+            final_rows.append(empty_row)
+
+        undecorated_data = pd.DataFrame([row for row in final_rows], columns=header_row)
+
+        decorated_data = undecorated_data.style.set_table_styles([{
+            'selector': 'tr:hover',
+            'props': 'font-size: 1.01em;'
+        }])
+
+        decorated_df = decorated_data.applymap(lambda x: 'background-color : lightblue' if len(x) < 1 else '')
+        return undecorated_data, decorated_df
+
+
 if __name__ == '__main__':
     gold_ans_sheet_url="https://docs.google.com/spreadsheets/d/1a3bLl2gMv1Ns_91sRcSTaKfKuTxM_LWPacYJ3RnhF40/edit?usp=sharing&headers=1"
     student_ans_sheet_url="https://docs.google.com/spreadsheets/d/1dIALjbxmOYP5A8hyevMRLA6fbV4fhY9g8cb_qFMITvk/edit?usp=sharing&headers=1"
@@ -96,5 +226,5 @@ if __name__ == '__main__':
     while user_query!= "quit":
         user_query = input("\n\nEnter parent email id (csv) to view scorecard history: ")
         results = director.search_scorecard_history_by_email(query_email_ids=[x.lower().strip() for x in user_query.split(",")])
-        for r in results:
-            print(r)
+        for r in director.prepare_results(results):
+            print(r.pd_df)
