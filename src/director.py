@@ -148,43 +148,6 @@ class Director:
             list_of_decorated_results.append(d)
         return list_of_decorated_results
 
-
-        # results : List[DecoratedResult] = []
-        # CHECKER_KEY="result_checker"
-        # assert CHECKER_KEY in st.session_state and st.session_state[CHECKER_KEY] is not None, f"{CHECKER_KEY} for checking results is missing."
-        # short_header = [x.replace('"','').replace("Question ", "Q") for x in header]
-        # logging.info(f"About to prepare nice format of student scorecard ... ")
-        #
-        # unsorted_rows = [row[:] for row in rows]
-        # logging.info(f"Retrieved: {len(unsorted_rows) if unsorted_rows else '0'} submissions.")
-        # dict_of_matrices: Dict[StudentInfo, List[List[str]]] = matrices_by_firstname(unsorted_rows)
-        # # logging.info(f"This about {len(dict_of_matrices)} students [{dict_of_matrices.keys()}] \n{len(dict_of_matrices.values())} ... ")
-        # for matching_record in matching_records:  # one parent can have multiple kids.
-        #     st.write(" ")
-        #     st.write("----------------------------------------")
-        #     st.write(f"**{student_info.f_name}** {student_info.l_name} - {student_info.grade} - Teacher {student_info.teacher}")
-        #     st.write("----------------------------------------")
-        #     final_rows = []
-        #
-        #     for mc, scorecard in matching_record.dict_of_mc_scorecards.items():
-        #         # final_rows.append([mc[5]] + result.gold_orig_ans)  # gold
-        #         # gold pretty that is not integer based.
-        #         final_rows.append([mc[5]] + scorecard.mc_gold.list_of_gold_answers)
-        #         final_rows.append(self.decorated_student_ans(
-        #             answers=scorecard.mc_response.list_of_student_answers,
-        #             marking=scorecard.list_of_scores,
-        #             mc_passed=scorecard.passed_mc_as_per_grade
-        #         ))
-        #         final_rows.append([""]*19)
-        #     data = pd.DataFrame([row for row in final_rows], columns=short_header)
-        #     prettier_data = data.style.set_table_styles([{
-        #         'selector': 'tr:hover',
-        #         'props': 'font-size: 1.01em;'
-        #     }])
-        #     prettier_data = prettier_data.applymap(lambda x: 'background-color : lightyellow' if len(x) < 1 else '')
-        #     # st.table(prettier_data)
-
-
     def write_to_pd_frame(self, dict_of_mc_scorecards : Dict[MathChallenge, StudentScorecard])-> (DataFrame, Styler):
         """
 
