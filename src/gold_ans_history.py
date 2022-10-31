@@ -9,7 +9,7 @@ class GoldAnsHistory:
     dict_of_mc_gold_answers: Dict[MathChallenge,GoldAns]
 
     def lookup_gold_ans_for(self, mc_challenge: MathChallenge) -> GoldAns:
-        return self.dict_of_mc_gold_answers.get(mc_challenge, GoldAns(mc_challenge, []))
+        return self.dict_of_mc_gold_answers.get(mc_challenge, GoldAns(mc_challenge, ["-TBD-"]*18))
 
 
     @staticmethod
