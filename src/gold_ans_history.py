@@ -9,7 +9,7 @@ class GoldAnsHistory:
     dict_of_mc_gold_answers: Dict[MathChallenge,GoldAns]
 
     def lookup_gold_ans_for(self, mc_challenge: MathChallenge) -> GoldAns:
-        return self.dict_of_mc_gold_answers.get(mc_challenge, GoldAns(mc_challenge, ["-TBD-"]*18))
+        return self.dict_of_mc_gold_answers.get(mc_challenge, GoldAns(mc_challenge))
 
 
     @staticmethod
@@ -18,8 +18,18 @@ class GoldAnsHistory:
         questions_csv = ", ".join([f'"Question {x}"' for x in range(1, 19)])  # Question 1, Question 2, ... Question 18
         query = f'SELECT "Math Challenge name", {questions_csv} FROM "{gold_sheet_url}"'
         rows = db_conn.execute(query)
+
         for r in rows:
-            mc = MathChallenge(mc_name=r[0])
-            value = GoldAns(list_of_gold_answers = [x for x in r[1:]], math_challenge=mc)
-            golds[mc] = value
+            is_display_ans = "display" in r[0] or "original" in r[0]
+            mc = MathChallenge(mc_name=r[0].split("_")[-1])  # r[0] = MC1, r[0] = display_MC1 =>extract MC1
+            if mc not in golds:
+                value = GoldAns(math_challenge=mc)
+                golds[mc] = value
+
+            answers = [x for x in r[1:]]
+            if is_display_ans:
+                golds[mc].set_display_answers(answers)
+            else:
+                golds[mc].set_gold_answers(answers)
+
         return golds
