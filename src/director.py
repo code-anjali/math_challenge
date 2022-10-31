@@ -161,7 +161,7 @@ class Director:
         final_rows.append(header_row)
 
         for mc, scorecard in dict_of_mc_scorecards.items():
-            final_rows.append([mc.mc_name] + scorecard.mc_gold.list_of_gold_answers)
+            final_rows.append([mc.mc_name] + scorecard.mc_gold.list_of_display_gold_answers)
             final_rows.append(self.decorated_student_ans(
                 answers=scorecard.mc_response.list_of_student_answers,
                 marking=scorecard.list_of_scores,
