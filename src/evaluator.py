@@ -80,8 +80,8 @@ class Evaluator:
             for ch in a:
                 if ord('0') <= ord(ch) <= ord('9'):
                     ans += ch
-            if not ans and len(a) > 0:
-                print(f"Check for preprocessing answer: input = {a}, output = {ans}")
+            # if not ans and len(a) > 0:
+            #     print(f"Check for preprocessing answer: input = {a}, output = {ans}")
         return int(ans) if ans else DEFAULT_EMPTY_ANS
 
 if __name__ == '__main__':

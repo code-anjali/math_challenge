@@ -59,7 +59,7 @@ class Director:
             stud_ans = r[1+5+num_schools: ]
             stud_ans_obj = StudentAns(student=stud_info,
                                       math_challenge=MathChallenge(mc_name=mc_name),
-                                      list_of_student_answers=stud_ans)
+                                      list_of_student_answers=["" if not x else str(x) for x in stud_ans])
 
             if stud_info not in dict_student_ans_history:
                 dict_student_ans_history[stud_info] = StudentAnsHistory(student=stud_info, dict_of_mc_responses = {})

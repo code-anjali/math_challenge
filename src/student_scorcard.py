@@ -50,6 +50,7 @@ class StudentScorecard:
     def compute(self, evaluator: Evaluator):
         assert self.mc_gold.math_challenge == self.mc_response.math_challenge, f"student scorecard requested for mismatching mc"
         for gold, stud in zip(self.mc_gold.list_of_gold_answers, self.mc_response.list_of_student_answers):
+            stud = "" if not stud else str(stud)
             eval_d = evaluator.evaluate(gold=gold, stud=stud)
             self.list_of_scores_with_diagnostics.append(eval_d)
             self.list_of_scores.append(eval_d["is_correct"])
