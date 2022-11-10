@@ -27,4 +27,8 @@ if __name__ == '__main__':
                 st.write("----------------------------------------")
                 st.write(f"**{decorated_result.student_info.f_name}** {decorated_result.student_info.l_name} - {decorated_result.student_info.grade} - Teacher {decorated_result.student_info.teacher}")
                 st.write("----------------------------------------")
-                st.table(decorated_result.pd_styler)
+                try:
+                    st.table(decorated_result.pd_styler)
+                except Exception as exc:
+                    print(f"Exception in displaying decorated table: {exc}.")
+                    st.table(decorated_result.pd_df)
