@@ -148,7 +148,7 @@ class Director:
                                     pd_styler=pd_styler)
                 list_of_decorated_results.append(d)
             except Exception as exc:
-                print(f"Exception in decorating result: {undecorated_result}")
+                print(f"Exception {exc} in decorating result: {undecorated_result}")
         return list_of_decorated_results
 
     def write_to_pd_frame(self, dict_of_mc_scorecards : Dict[MathChallenge, StudentScorecard])-> (DataFrame, Styler):
