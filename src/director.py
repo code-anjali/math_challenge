@@ -140,12 +140,15 @@ class Director:
 
         list_of_decorated_results : List[DecoratedResult] = []
         for undecorated_result in matching_records:
-            pd_df, pd_styler = self.write_to_pd_frame(undecorated_result.dict_of_mc_scorecards)
-            d = DecoratedResult(student_info = undecorated_result.student,
-                                diagnostics= undecorated_result.dict_of_mc_scorecards,
-                                pd_df=pd_df,
-                                pd_styler=pd_styler)
-            list_of_decorated_results.append(d)
+            try:
+                pd_df, pd_styler = self.write_to_pd_frame(undecorated_result.dict_of_mc_scorecards)
+                d = DecoratedResult(student_info = undecorated_result.student,
+                                    diagnostics= undecorated_result.dict_of_mc_scorecards,
+                                    pd_df=pd_df,
+                                    pd_styler=pd_styler)
+                list_of_decorated_results.append(d)
+            except Exception as exc:
+                print(f"Exception in decorating result: {undecorated_result}")
         return list_of_decorated_results
 
     def write_to_pd_frame(self, dict_of_mc_scorecards : Dict[MathChallenge, StudentScorecard])-> (DataFrame, Styler):
