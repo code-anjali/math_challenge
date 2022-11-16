@@ -20,8 +20,10 @@ class Evaluator:
                 "stud_str": stud
                 }
 
+
     def ans_to_ans_with_text_retain(self, a: str, pattern_to_retain) -> Dict[str, int]:
         return {x: x_id+1 for x_id, x in enumerate(re.findall(string=a, pattern=pattern_to_retain))}
+
 
     def ans_with_text_retain_to_int(self, a: str, text_retain_dict: Dict[str, int]) -> int:
         ans = ""
