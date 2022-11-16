@@ -13,7 +13,7 @@ class Evaluator:
         gold_txt_to_retain_dict = self.ans_to_ans_with_text_retain(a=gold, pattern_to_retain=pattern_to_retain)
         gold_ints = [self.ans_with_text_retain_to_int(a=gold_answer, text_retain_dict= gold_txt_to_retain_dict) for gold_answer in gold_answers]
         stud_int = self.ans_with_text_retain_to_int(a=stud, text_retain_dict= gold_txt_to_retain_dict)
-        return {"is_correct": stud_int in gold_ints,
+        return {"is_correct": stud_int in gold_ints and len(gold) > 0 and gold != DEFAULT_EMPTY_ANS and gold !="-TBD-",
                 "stud": stud_int,
                 "gold": gold_ints,
                 "gold_str": gold,
