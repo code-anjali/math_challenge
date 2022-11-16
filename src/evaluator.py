@@ -1,5 +1,5 @@
 import re
-from typing import List, Dict, Any
+from typing import Dict, Any
 
 DEFAULT_EMPTY_ANS=-1000000  # if an answer cannot be parsed as an int (e.g., two ducklings or ducklings)
 
@@ -20,34 +20,7 @@ class Evaluator:
                 "stud_str": stud
                 }
 
-    # def ans_to_ints(self, a: str, split_ans_on = "__OR__", pattern_to_retain="\{(.*?)\}") -> List[int]:
-    #     answers = a.split(split_ans_on)
-    #
-    #     ints = [self.ans_with_text_retain_to_int(a=x,
-    #                                              text_retain_dict=self.ans_to_ans_with_text_retain(
-    #                                                  a=a, pattern_to_retain=pattern_to_retain)
-    #                                              )
-    #             for x in answers]
-    #     return ints
-
-        # for a in answers:
-        #     a_s = [self.ans_to_int(a=x, text_retain_dict=text_retain_dict) for x in a.split(split_ans_on)]
-        #     text_retain_dict = self.ans_to_ans_with_text_retain(a=a, pattern_to_retain=pattern_to_retain)
-        #     int_ans = self.ans_with_text_retain_to_int(a=a, text_retain_dict=text_retain_dict)
-        #     ints.append(int_ans) # ints can be a list [int] or an int
-        #
-        # if a and split_ans_on in a:
-        #     a_s = [self.ans_to_int(a=x, text_retain_dict=text_retain_dict) for x in a.split(split_ans_on)]
-        #     answers.append(a_s)  # answers can be a list [int] or an int
-        # else:
-        #     answers.append(self.ans_to_int(a=a, text_retain_dict=text_retain_dict))
-
     def ans_to_ans_with_text_retain(self, a: str, pattern_to_retain) -> Dict[str, int]:
-        # if list_of_text_retain_dict:
-        #     assert len(list_of_text_retain_dict) == len(answers), f"Challenge.init (question wise text to retain) not " \
-        #                                                       f"passed correctly (length of this array must be equal " \
-        #                                                       f"to number of answers i.e. {len(answers)}) and not " \
-        #                                                       f"{len(list_of_text_retain_dict)}: {list_of_text_retain_dict}"
         return {x: x_id+1 for x_id, x in enumerate(re.findall(string=a, pattern=pattern_to_retain))}
 
     def ans_with_text_retain_to_int(self, a: str, text_retain_dict: Dict[str, int]) -> int:
