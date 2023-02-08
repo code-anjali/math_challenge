@@ -6,9 +6,10 @@ sys.path.append('src')
 
 from src.director import Director
 
-def leaderboard_html_tbl(out_fp, leaderboard_data):
-    with open(out_fp, 'w') as o_table_handle:
-        o_table_handle.write(""" <html> 
+def leaderboard_html_tbl(leaderboard_data):
+    o_table_handle = []
+
+    o_table_handle.append(""" <html> 
                 <head>
                 <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -102,17 +103,18 @@ def leaderboard_html_tbl(out_fp, leaderboard_data):
                         <th>Score</th>
                     </tr>
                     """)
-        for ld in leaderboard_data:
-            o_table_handle.write(f"""<tr>
-                    <td>{ld['name']}</td>
-                    <td>{ld['grade']}</td> 
-                    <td>{ld['teacher']}</td> 
-                    <td>{ld['score']}</td> 
-                    </tr>""")
-        o_table_handle.write("\n</table><br><br><hr><br>")
-        o_table_handle.write("</body></html>")
 
-    print(f"Saving results file to {out_fp}")
+    for ld in leaderboard_data:
+        o_table_handle.append(f"""<tr>
+                <td>{ld['name']}</td>
+                <td>{ld['grade']}</td> 
+                <td>{ld['teacher']}</td> 
+                <td>{ld['score']}</td> 
+                </tr>""")
+    o_table_handle.append("\n</table><br><br><hr><br>")
+    o_table_handle.append("</body></html>")
+
+    return "\n".join(o_table_handle)
 
 
 def main():
@@ -125,6 +127,7 @@ def main():
         st.session_state["director"] = director
 
     whitelisted = {"Shreya Bulusu"}
+    finalists = []
     with st.form("form1"):
         st.title("Leaderboard.")
         min_scorecard = int(st.number_input("min. qualification for leaderboard", min_value=1, max_value=20, step=1))
@@ -133,7 +136,7 @@ def main():
         if user_clicked:
             scorecards = {student: scorecard.num_accepted_mcs() for student, scorecard in st.session_state["director"].dict_student_scorecard_history.items()}
             scorecards_sorted = sorted(scorecards.items(), key=lambda x: x[1], reverse=True)
-            finalists = []
+
 
             for student_score in scorecards_sorted:
                 if student_score[0].school != school:
@@ -147,12 +150,23 @@ def main():
                                      "score": 100*student_score[1]})
 
 
-            st.json(finalists)
-            out_fp = f"/tmp/{school.lower().replace(' ', '-')}-leaderboard.html"
-            leaderboard_html_tbl(out_fp=out_fp, leaderboard_data=finalists)
+            # st.json(finalists)
+            # out_fp = f"/tmp/{school.lower().replace(' ', '-')}-leaderboard.html"
+            leaderboard_tbl = leaderboard_html_tbl(leaderboard_data=finalists)
             st.write()
             st.write(f"Number of finalists = {len(finalists)}")
-            st.write(f"Output in file://{out_fp}")
+
+    if finalists:
+        st.download_button(label='Download Leaderboard table',
+                               file_name=f"{school.lower().replace(' ', '-')}-leaderboard.html",
+                               data=leaderboard_tbl,
+                               mime='text/plain')
+
+
+            # with open(out_fp, 'w') as outfile:
+            #     outfile.write(leaderboard_tbl)
+            # st.write(f"Output in file://{out_fp}\n\n")
+            # st.text(leaderboard_tbl)
 
 
 
