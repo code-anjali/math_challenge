@@ -14,3 +14,6 @@ class StudentScorecardHistory:
         arr = [f"\n{mc}\n{sscard}" for mc, sscard in self.dict_of_mc_scorecards.items()]
         arr_str = "\n\n".join(arr)
         return f"Student = {self.student} \n{arr_str}"
+
+    def num_accepted_mcs(self):
+        return sum([int(sc.passed_mc_as_per_grade) for mc, sc in self.dict_of_mc_scorecards.items()])
