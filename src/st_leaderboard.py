@@ -126,7 +126,8 @@ def main():
         # cache director in streamlit cache
         st.session_state["director"] = director
 
-    whitelisted = {"Shreya Bulusu"}
+    whitelisted = {"Shreya Bulusu"} # these people do not want to be on the leaderboard.
+
     finalists = []
     with st.form("form1"):
         st.title("Leaderboard.")
@@ -141,7 +142,7 @@ def main():
             for student_score in scorecards_sorted:
                 if student_score[0].school != school:
                     continue
-                if f"{student_score[0].f_name} {student_score[0].l_name}" in whitelisted:
+                if f"{student_score[0].f_name.strip()} {student_score[0].l_name.strip()}" in whitelisted:
                     continue
                 if int(student_score[1]) >= min_scorecard:
                     finalists.append({"name": f"{student_score[0].f_name} {student_score[0].l_name[0]}.",

@@ -54,8 +54,8 @@ class Director:
             grade_teacher = "".join(all_schools_grade_teachers)
             grade, teacher = grade_teacher.split(" - ")
             mc_name=r[5+num_schools]
-            stud_info = StudentInfo(email= r[1], f_name=r[2], l_name=r[3], school=r[4],
-                                    grade = grade, teacher = teacher, wants_to_be_on_leaderboard=True)
+            stud_info = StudentInfo(email= r[1].strip(), f_name=r[2].strip(), l_name=r[3].strip(), school=r[4].strip(),
+                                    grade = grade.strip(), teacher = teacher.strip(), wants_to_be_on_leaderboard=True)
             stud_ans = r[1+5+num_schools: ]
             stud_ans_obj = StudentAns(student=stud_info,
                                       math_challenge=MathChallenge(mc_name=mc_name),
