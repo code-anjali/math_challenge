@@ -6,7 +6,7 @@ sys.path.append('src')
 
 from src.director import Director
 
-def leaderboard_html_tbl(leaderboard_data):
+def leaderboard_html_tbl(leaderboard_data, need_email: bool):
     o_table_handle = []
 
     o_table_handle.append(""" <html> 
@@ -105,12 +105,21 @@ def leaderboard_html_tbl(leaderboard_data):
                     """)
 
     for ld in leaderboard_data:
-        o_table_handle.append(f"""<tr>
+        xxx = f"""<tr>
                 <td>{ld['name']}</td>
-                <td>{ld['grade']}</td> 
+                <td>{ld['grade']}</td>
                 <td>{ld['teacher']}</td> 
                 <td>{ld['score']}</td> 
-                </tr>""")
+                </tr>"""
+        if need_email:
+            xxx = f"""<tr>
+                <td>{ld['name']}</td>
+                <td>{ld['grade']}</td>
+                <td>{ld['email']}</td> 
+                <td>{ld['teacher']}</td> 
+                <td>{ld['score']}</td> 
+                </tr>"""
+        o_table_handle.append(xxx)
     o_table_handle.append("\n</table><br><br><hr><br>")
     o_table_handle.append("</body></html>")
 
@@ -134,6 +143,7 @@ def main():
         min_scorecard = int(st.number_input("min. qualification for leaderboard", min_value=1, max_value=20, step=1))
         school = st.selectbox(label="school", options=["Discovery Elementary", "Grand Ridge Elementary"])
         user_clicked = st.form_submit_button(label="Generate leaderboard")
+        need_email = st.checkbox(label="print with email ids?")
         if user_clicked:
             scorecards = {student: scorecard.num_accepted_mcs() for student, scorecard in st.session_state["director"].dict_student_scorecard_history.items()}
             scorecards_sorted = sorted(scorecards.items(), key=lambda x: x[1], reverse=True)
@@ -147,13 +157,16 @@ def main():
                 if int(student_score[1]) >= min_scorecard:
                     finalists.append({"name": f"{str.capitalize(student_score[0].f_name)} {str.capitalize(student_score[0].l_name[0])}.",
                                      "grade": student_score[0].grade,
+                                     "email": student_score[0].email,
                                      "teacher": student_score[0].teacher,
-                                     "score": 100*student_score[1]})
+                                     "score": 100*student_score[1]
+                                      }
+                                     )
 
 
             # st.json(finalists)
             # out_fp = f"/tmp/{school.lower().replace(' ', '-')}-leaderboard.html"
-            leaderboard_tbl = leaderboard_html_tbl(leaderboard_data=finalists)
+            leaderboard_tbl = leaderboard_html_tbl(leaderboard_data=finalists, need_email=need_email)
             st.write()
             st.write(f"Number of finalists = {len(finalists)}")
 
