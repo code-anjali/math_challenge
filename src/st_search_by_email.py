@@ -9,8 +9,13 @@ from src.director import Director
 if __name__ == '__main__':
     st.set_page_config(layout="wide")
     if "director" not in st.session_state:
+        # Following two were for 2022-23
+        # gold_ans_sheet_url="https://docs.google.com/spreadsheets/d/1a3bLl2gMv1Ns_91sRcSTaKfKuTxM_LWPacYJ3RnhF40/edit?usp=sharing&headers=1"
+        # student_ans_sheet_url="https://docs.google.com/spreadsheets/d/1dIALjbxmOYP5A8hyevMRLA6fbV4fhY9g8cb_qFMITvk/edit?usp=sharing&headers=1"
+        
         gold_ans_sheet_url="https://docs.google.com/spreadsheets/d/1a3bLl2gMv1Ns_91sRcSTaKfKuTxM_LWPacYJ3RnhF40/edit?usp=sharing&headers=1"
-        student_ans_sheet_url="https://docs.google.com/spreadsheets/d/1dIALjbxmOYP5A8hyevMRLA6fbV4fhY9g8cb_qFMITvk/edit?usp=sharing&headers=1"
+        student_ans_sheet_url="https://docs.google.com/spreadsheets/d/10PQd-zF7uWTv8EkZtVjTyoTT-sMt_kx7M9Kwa8W0kOk/edit?usp=sharing"
+        
         director = Director(in_localhost= False,gold_ans_sheet_url=gold_ans_sheet_url,student_ans_sheet_url=student_ans_sheet_url, override_prev_answers=True)
         # cache director in streamlit cache
         st.session_state["director"] = director
