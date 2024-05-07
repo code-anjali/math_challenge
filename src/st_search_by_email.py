@@ -13,8 +13,16 @@ if __name__ == '__main__':
         # gold_ans_sheet_url="https://docs.google.com/spreadsheets/d/1a3bLl2gMv1Ns_91sRcSTaKfKuTxM_LWPacYJ3RnhF40/edit?usp=sharing&headers=1"
         # student_ans_sheet_url="https://docs.google.com/spreadsheets/d/1dIALjbxmOYP5A8hyevMRLA6fbV4fhY9g8cb_qFMITvk/edit?usp=sharing&headers=1"
         
+        # These should be for 2023-24
+        # gold_ans_sheet_url="https://docs.google.com/spreadsheets/d/1a3bLl2gMv1Ns_91sRcSTaKfKuTxM_LWPacYJ3RnhF40/edit?usp=sharing&headers=1"
+        # # OLD: student_ans_sheet_url="https://docs.google.com/spreadsheets/d/1dIALjbxmOYP5A8hyevMRLA6fbV4fhY9g8cb_qFMITvk/edit?usp=sharing&headers=1"
+        # student_ans_sheet_url="https://docs.google.com/spreadsheets/d/1Y4nLkTxDGMaDYj3quIMDwUjDjGdCpIHj8KS5I2eOwWc/edit?usp=sharing&headers=1"
         gold_ans_sheet_url="https://docs.google.com/spreadsheets/d/1a3bLl2gMv1Ns_91sRcSTaKfKuTxM_LWPacYJ3RnhF40/edit?usp=sharing&headers=1"
-        student_ans_sheet_url="https://docs.google.com/spreadsheets/d/10PQd-zF7uWTv8EkZtVjTyoTT-sMt_kx7M9Kwa8W0kOk/edit?usp=sharing"
+        # (OLD ONE) student_ans_sheet_url="https://docs.google.com/spreadsheets/d/10PQd-zF7uWTv8EkZtVjTyoTT-sMt_kx7M9Kwa8W0kOk/edit?usp=sharing"
+        
+        # TODO (Niket) use gsheet_names to get the correct sheet
+        student_ans_sheet_url="https://docs.google.com/spreadsheets/d/1Y4nLkTxDGMaDYj3quIMDwUjDjGdCpIHj8KS5I2eOwWc/edit?usp=sharing&headers=1"
+        # https://docs.google.com/spreadsheets/d/1a3bLl2gMv1Ns_91sRcSTaKfKuTxM_LWPacYJ3RnhF40/edit?usp=sharing&headers=1
         
         director = Director(in_localhost= False,gold_ans_sheet_url=gold_ans_sheet_url,student_ans_sheet_url=student_ans_sheet_url, override_prev_answers=True)
         # cache director in streamlit cache
@@ -30,7 +38,7 @@ if __name__ == '__main__':
             for decorated_result in st.session_state["director"].prepare_results(results):
                 st.write(" ")
                 st.write("----------------------------------------")
-                st.write(f"**{decorated_result.student_info.f_name}** {decorated_result.student_info.l_name} - {decorated_result.student_info.grade} - Teacher {decorated_result.student_info.teacher}")
+                st.write(f"**{decorated_result.student_info.f_name}** {decorated_result.student_info.l_name} - {decorated_result.student_info.grade} - School {decorated_result.student_info.school}")
                 st.write("----------------------------------------")
                 try:
                     st.table(decorated_result.pd_styler)

@@ -49,14 +49,15 @@ class Director:
         rows = self.db_conn.execute(query)
         for r in rows:
             num_cols = len(r)
-            num_schools = num_cols - 24 # MC, Q1...Q18 = 19 and timestamp, email, first name, last name, school = 5
-            all_schools_grade_teachers = ["" if not x else x for x in r[5:5 + num_schools]]
-            grade_teacher = "".join(all_schools_grade_teachers)
-            grade, teacher = grade_teacher.split(" - ")
-            mc_name=r[5+num_schools]
-            stud_info = StudentInfo(email= r[1].strip().lower(), f_name=r[2].strip().lower(), l_name=r[3].strip().lower(), school=r[4].strip(),
-                                    grade = grade.strip(), teacher = teacher.strip(), wants_to_be_on_leaderboard=True)
-            stud_ans = r[1+5+num_schools: ]
+            # Timestamp[0]	Email Address[1]	School year[2]	School name[3]	Student first name[4] 	Student last name[5] 	Grade[6]	Math Challenge name[7]	Question 1[8]	Question 2	...	Question 18						
+            # num_schools = num_cols - 24 # MC, Q1...Q18 = 19 and timestamp, email, first name, last name, school = 5
+            # all_schools_grade_teachers = ["" if not x else x for x in r[5:5 + num_schools]]
+            # grade_teacher = "".join(all_schools_grade_teachers)
+            # grade, teacher = grade_teacher.split(" - ")
+            mc_name=r[7]
+            stud_info = StudentInfo(email= r[1].strip().lower(), f_name=r[4].strip().lower(), l_name=r[5].strip().lower(), school=r[3].strip(),
+                                    grade = r[6].strip(), wants_to_be_on_leaderboard=True)
+            stud_ans = r[8: ]
             stud_ans_obj = StudentAns(student=stud_info,
                                       math_challenge=MathChallenge(mc_name=mc_name),
                                       list_of_student_answers=["" if not x else str(x) for x in stud_ans])
@@ -185,7 +186,9 @@ class Director:
 
 if __name__ == '__main__':
     gold_ans_sheet_url="https://docs.google.com/spreadsheets/d/1a3bLl2gMv1Ns_91sRcSTaKfKuTxM_LWPacYJ3RnhF40/edit?usp=sharing&headers=1"
-    student_ans_sheet_url="https://docs.google.com/spreadsheets/d/1dIALjbxmOYP5A8hyevMRLA6fbV4fhY9g8cb_qFMITvk/edit?usp=sharing&headers=1"
+    # student_ans_sheet_url="https://docs.google.com/spreadsheets/d/1dIALjbxmOYP5A8hyevMRLA6fbV4fhY9g8cb_qFMITvk/edit?usp=sharing&headers=1"
+    student_ans_sheet_url="https://docs.google.com/spreadsheets/d/1Y4nLkTxDGMaDYj3quIMDwUjDjGdCpIHj8KS5I2eOwWc/edit?usp=sharing&headers=1"
+    
     director = Director(in_localhost= True,gold_ans_sheet_url=gold_ans_sheet_url,student_ans_sheet_url=student_ans_sheet_url, override_prev_answers=True)
     print("done.")
     user_query = ""
